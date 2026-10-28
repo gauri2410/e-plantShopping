@@ -8,7 +8,11 @@ export default function CartItem() {
   const items = useSelector((state) => state.cart.items);
   const total = items.reduce((sum, item) => sum + (item.cost ?? item.price) * item.quantity, 0);
   const handleIncrement = (item) => dispatch(updateQuantity({ id: item.id, quantity: item.quantity + 1 }));
-  const handleDecrement = (item) => dispatch(updateQuantity({ id: item.id, quantity: Math.max(1, item.quantity - 1) }));
+  const handleDecrement = (item) => {
+    if (item.quantity <= 1) dispatch(removeItem(item.name));
+    else dispatch(updateQuantity({ id: item.id, quantity: item.quantity - 1 }));
+  };
+  const handleRemove = (item) => dispatch(removeItem(item.name));
   const handleContinueShopping = (event) => {
     event.preventDefault();
     window.location.href = '/plants';
@@ -54,7 +58,7 @@ export default function CartItem() {
               </div>
               <div className="cart-item-total">
                 <strong>${((item.cost ?? item.price) * item.quantity).toFixed(2)}</strong>
-                <button className="remove-button delete-button" onClick={() => { dispatch(removeItem(item.id)); dispatch(removeFromCart(item.id)); }}>Delete</button>
+                <button className="remove-button delete-button cart-item-delete" onClick={() => handleRemove(item)}>Delete</button>
               </div>
             </article>
           ))}
@@ -65,7 +69,7 @@ export default function CartItem() {
           <div><span>Delivery</span><span className="free">Free</span></div>
           <hr />
           <div className="summary-total"><span>Total</span><strong>${total.toFixed(2)}</strong></div>
-          <button className="primary-button checkout-button" onClick={() => window.alert('Coming Soon!')}>Checkout</button>
+          <button className="primary-button checkout-button get-started-button1" onClick={() => window.alert('Coming Soon!')}>Checkout</button>
           <Link className="continue-link get-started-button" to="/plants" onClick={handleContinueShopping}>← Continue shopping</Link>
         </aside>
       </div>

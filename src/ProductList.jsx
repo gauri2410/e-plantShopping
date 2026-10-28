@@ -9,11 +9,16 @@ export default function ProductList() {
   const cartItems = useSelector((state) => state.cart.items);
   const cartIds = new Set(cartItems.map((item) => item.id));
   const [addedToCart, setAddedToCart] = useState({});
+  const cartQuantity = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <>
       <Navbar />
       <main className="listing-page product-list">
+        <div className="product-list-navbar">
+          <span>Plant categories: {plantsArray.length}</span>
+          <span className="cart-icon" aria-label={`${cartQuantity} items in cart`}>🛒 {cartQuantity}</span>
+        </div>
       <section className="listing-hero">
         <p className="eyebrow">The plant edit</p>
         <h1>Find your new <i>favorite</i> leaf.</h1>
@@ -21,7 +26,7 @@ export default function ProductList() {
         <span className="plant-count">{allPlants.length} plants · 3 collections</span>
       </section>
       {plantCategories.map((category) => (
-        <section className="category-section" key={category.name}>
+        <section className="category-section product-list" key={category.name}>
           <div className="category-heading">
             <div>
               <p className="eyebrow">Collection</p>
@@ -44,13 +49,13 @@ export default function ProductList() {
                   </div>
                   <button
                     className={isAdded ? 'add-button added' : 'add-button'}
-                    disabled={isAdded}
+                    disabled={addedToCart[plant.name]}
                     onClick={() => {
                       dispatch(addItem({ ...plant, cost: plant.price }));
                       setAddedToCart((current) => ({ ...current, [plant.name]: true }));
                     }}
                   >
-                    {isAdded ? 'Added to cart' : 'Add to cart'}
+                    {isAdded ? 'Added to Cart' : 'Add to Cart'}
                   </button>
                 </article>
               );
